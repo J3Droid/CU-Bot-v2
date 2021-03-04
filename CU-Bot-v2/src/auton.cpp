@@ -637,7 +637,7 @@ double calculateLeftSpeed(double speed, int turningRadius)
 double calculateRightSpeed(double speed, int turningRadius)
 {
   double angularSpeed = ((speed * 2) * (2 * M_PI)) / (60);
-  double rightSpeed = (angularSpeed) * (turningRadius + 11.5); 
+  double rightSpeed = (angularSpeed) * (turningRadius + 11.5); //change {11.5} according to distance from center to wheels
   rightSpeed = rightSpeed / 2; 
   return rightSpeed;
 }
@@ -651,7 +651,7 @@ double back_encoderError = 0;
 double distanceTraveledlast = 0; 
 double driftLeftError = 0, driftRightError = 0, combinedDriftError = 0, combinedDriftErrorMultiply = 0;  
 
-void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobot, double multiply, double multiplyForHorizontal, double addingFactor, bool cancel = true, int sideWays = 4, double turningRadius = 0, double angleNeeded = 0, double sideWaysDistance = 0, double stafeAtEnd = 0, double distanceAtEnd = 100, double angleAtEnd = 0, double turningRadiusAtEnd = 0) {
+void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobot, double multiply, double multiplyForHorizontal, double addingFactor = 0, bool cancel = true, int sideWays = 4, double turningRadius = 0, double angleNeeded = 0, double sideWaysDistance = 0, double stafeAtEnd = 0, double distanceAtEnd = 100, double angleAtEnd = 0, double turningRadiusAtEnd = 0) {
 
   static
   const double circumference = 3.14159 * 2.825;
@@ -677,18 +677,18 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
   double rightEndPoint1 = rightStartPoint1 + wheelRevs;
 
  switch(sideWays){
- case 0: directionLeftFront = 0, directionRightBack = 0;
+ case 0: directionLeftFront = 0, directionRightBack = 0; //diagonal left
  break;
- case 1: directionRightFront = 0, directionLeftBack = 0;
+ case 1: directionRightFront = 0, directionLeftBack = 0; //diagonal right
  break;
- case 2:
+ case 2: // arc movement left
  break;
- case 3:  
+ case 3:  // arc movement right
  break; 
- case 4:
+ case 4: //normal
  break;
  }
-
+/*
   if(sideWays == 2){ 
   front_L.spin(fwd, directionLeftFront * calculateLeftSpeed(minimum_velocity, turningRadius), velocityUnits::pct);
   back_L.spin(fwd, directionLeftBack *  calculateLeftSpeed(minimum_velocity, turningRadius), velocityUnits::pct);
@@ -708,20 +708,20 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
   front_R.spin(fwd, directionRightFront *  minimum_velocity, velocityUnits::pct);
   back_R.spin(fwd, directionRightBack *  minimum_velocity, velocityUnits::pct);
   }
-  
-  task::sleep(90);
+  */
 
-  //int sameEncoderValue = 0;
+  int sameEncoderValue = 0;
   double distanceTraveled = 0;
 
   while (direction * (distanceTraveled - rightStartPoint) <= direction * wheelRevs) {
-    /*if ((back_R.velocity(rpm) == 0 || back_L.velocity(rpm) == 0) && sideWays >= 4) {
+    if ((back_R.velocity(rpm) == 0 || back_L.velocity(rpm) == 0) && sideWays >= 4) {
       ++sameEncoderValue;
     }
-
+    
     if (sameEncoderValue > 10) {
       break;
-    }*/
+    }
+    
 
     /*if ((distanceTraveled == distanceTraveledlast) && distanceTraveled > 0.1 && cancel == true) {
       break;
@@ -828,7 +828,7 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
     maxVelocity = 30;
     if (direction * (distanceTraveled - leftStartPoint) <
       direction * wheelRevs) {
-      front_L.setVelocity(calculateLeftSpeed( 
+      front_L.setVelocity(calculateLeftSpeed( //do front_L.spin(fwd, speed, pct)
         directionLeftFront * std::min(
           maxVelocity,
           std::min(increasing_speed(
@@ -1117,7 +1117,7 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
   if (distanceIn == 0)
     return;
   double direction = distanceIn > 0 ? 1.0 : -1.0;
-  double wheelRevs = ((distanceIn - (direction * 1)) / circumference);
+  double wheelRevs = ((distanceIn) / circumference);
   resetFunction();
 
   //double lastEncoderValue = 0.0;
@@ -1145,14 +1145,14 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
   //double driftRightError = (front_L.rotation(deg) + back_R.rotation(deg));
   //double previousOffset = (driftLeftError - driftRightError) / 2;
 
-  while (direction * (rightStartPoint + distanceTraveled) < direction * rightEndPoint) {
-
+  while (direction * (distanceTraveled - rightStartPoint) <=direction * wheelRevs) {
+    distanceTraveledlast = distanceTraveled;
     if (back_R.velocity(rpm) == 0) {
       ++sameEncoderValue;
     }
 
     if (sameEncoderValue > 2) {
-      //break;
+      break;
     }
 
     double rotationLeft = pow(front_L.rotation(rev), 2);
@@ -1168,14 +1168,21 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
     } else {
       headingErrorTest = direction * 0;
     }
+pogChamp = ((error + combinedDriftErrorMultiply) * 0.5) ;
 
     headingError = -(headingOfRobot - get_average_inertial()) * multiply;
     printf("heading error %f\n", headingError);
     printf("encoder value %f\n", distanceTraveled);
     printf("wheelRevs %f\n", wheelRevs);
     printf("encoder error %f\n", rightEndPoint);
+    if (fabs(pogChamp) > 0.1) {
+      headingErrorTest = (pogChamp) * 2;
+    } 
+    else{
+      headingErrorTest = 0;
+    }
 
-    if (direction * (rightStartPoint + distanceTraveled) < direction * rightEndPoint) {
+    if (direction * (rightStartPoint + distanceTraveled) < direction * wheelRevs) { // wheelRevs was originally rightEndPoint
       front_L.setVelocity(
         direction * std::min(
           maxVelocity,
@@ -1184,13 +1191,13 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
               distanceTraveled, addingFactor),
             decreasing_speed(leftEndPoint,
               distanceTraveled))) +
-        (headingError),
+        (headingError) - (headingErrorTest),
         vex::velocityUnits::pct);
     } else {
       front_L.stop(hold);
     }
 
-    if (direction * (rightStartPoint + distanceTraveled) < direction * rightEndPoint) {
+    if (direction * (rightStartPoint + distanceTraveled) < direction * wheelRevs) { // wheelRevs was originally rightEndPoint
       back_L.setVelocity(
         direction * -(std::min(
             maxVelocity,
@@ -1198,13 +1205,13 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
                 distanceTraveled, addingFactor),
               decreasing_speed(leftEndPoint1,
                 distanceTraveled))) +
-          (headingError)),
+          (headingError) - (headingErrorTest)),
         vex::velocityUnits::pct);
     } else {
       back_L.stop(hold);
     }
 
-    if (direction * (rightStartPoint + distanceTraveled) < direction * rightEndPoint) {
+    if (direction * (rightStartPoint + distanceTraveled) < direction * wheelRevs) { // wheelRevs was originally rightEndPoint
       front_R.setVelocity(
         direction * -(std::min(
             maxVelocity,
@@ -1213,13 +1220,13 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
                 distanceTraveled, addingFactor),
               decreasing_speed(rightEndPoint,
                 distanceTraveled))) -
-          (headingError)),
+          (headingError) + (headingErrorTest)),
         vex::velocityUnits::pct);
     } else {
       front_R.stop(hold);
     }
 
-    if (direction * (rightStartPoint + distanceTraveled) < direction * rightEndPoint) {
+    if (direction * (rightStartPoint + distanceTraveled) < direction * wheelRevs) { // wheelRevs was originally rightEndPoint
       back_R.setVelocity(
         direction * std::min(
           maxVelocity,
@@ -1227,7 +1234,7 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
               distanceTraveled, addingFactor),
             decreasing_speed(rightEndPoint1,
               distanceTraveled))) -
-        (headingError),
+        (headingError) + (headingErrorTest),
         vex::velocityUnits::pct);
     } else {
       back_R.stop(hold);
@@ -1865,11 +1872,14 @@ void preAuton() {
 }
 
 
-/*void homeRowAuton(){
+  void homeRowAuton(){/*
   createBallCountTask();
   createIntakeOnTask();
   setDriveSpeed(-5, -5);
   task::sleep(1000);
+  */
+  strafeWalk(10, 90, 0, 0.6, 0)  ;
+  /*
   moveForwardWalk(49, 80, 45, 0, 0, 0, true, 2, 27, 90, 0, 0, 60, 80, 12);
   while(true){
     if(ballFinal >= 1 && ballPos1.reflectivity() < 5){
@@ -1880,6 +1890,8 @@ void preAuton() {
   stopIntakeOn();
   brakeIntake();
   createPrimeTask();
+  */
+  /*
   while(true){
     if(waitTillOver == true){
     break;
@@ -1915,7 +1927,8 @@ void preAuton() {
   moveForwardWalk(-12, 80, 180, 0.6, 1, 0);
   rotatePID(315, 90);
   //moveForwardWalk(90, 30, 0, 0, 0, 0, 2, 20, 45, 0, 0, 20, 0, 20);
-}*/
+  */
+}
 
 /*void skills(){
   createIntakeOnTask();
@@ -2033,6 +2046,7 @@ void testRun()
   //brakeIndexer();
   strafeWalk(15.25, 80, 0, 0.6, 0); // Move in front of front left corner goal
   autonUnfold();
+  moveForwardWalk(49, 80, 45, 0, 0, 0, true, 2, 27, 90, 0, 0, 60, 80, 12);
 
 
   // Score preload ball in front left corner goal
@@ -2160,3 +2174,4 @@ void testRun()
   strafeWalk(24, 80, -45, 0.6, 0);
 */
 }
+
