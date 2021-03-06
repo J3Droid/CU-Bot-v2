@@ -15,6 +15,7 @@ bool goingDown = false;
 
 bool finishedAutonUnfolding = false;
 
+
 //Unfolding procedure
 void autonUnfold ()
 {
@@ -63,6 +64,35 @@ void progAutoIndexNew()
 }
 
 //Autoindexing task
+
+int progAutoIndexCallback() 
+{
+  float threshold1 = 5;
+  float threshold2 = 5;
+  while (true) 
+  { 
+    if (ballPos2.reflectivity() < threshold2 && Controller1.ButtonR1.pressing() == false && Controller1.ButtonR2.pressing() == false)
+    {
+      indexer.spin(fwd, 50, pct);
+      sorter.spin(fwd, 50, pct);
+    } 
+    
+    else if (ballPos1.reflectivity() < threshold1 && ballPos2.reflectivity() > threshold2 && Controller1.ButtonR1.pressing() == false && Controller1.ButtonR2.pressing() == false)
+    {
+      indexer.spin(fwd, 50, pct);
+      //wait (0.25, sec);
+    }
+
+    else 
+    {
+      indexer.stop(brake);
+      sorter.stop(brake);
+    }
+
+    task::sleep(10);
+  }
+return 1; 
+}
 
 void progAutoIndex() 
 {
@@ -651,7 +681,7 @@ double back_encoderError = 0;
 double distanceTraveledlast = 0; 
 double driftLeftError = 0, driftRightError = 0, combinedDriftError = 0, combinedDriftErrorMultiply = 0;  
 
-void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobot, double multiply, double multiplyForHorizontal, double addingFactor = 0, bool cancel = true, int sideWays = 4, double turningRadius = 0, double angleNeeded = 0, double sideWaysDistance = 0, double stafeAtEnd = 0, double distanceAtEnd = 100, double angleAtEnd = 0, double turningRadiusAtEnd = 0) {
+void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobot, double multiply, double multiplyForHorizontal, double addingFactor, bool cancel = true, int sideWays = 4, double turningRadius = 0, double angleNeeded = 0, double sideWaysDistance = 0, double stafeAtEnd = 0, double distanceAtEnd = 100, double angleAtEnd = 0, double turningRadiusAtEnd = 0) {
 
   static
   const double circumference = 3.14159 * 2.825;
@@ -677,18 +707,18 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
   double rightEndPoint1 = rightStartPoint1 + wheelRevs;
 
  switch(sideWays){
- case 0: directionLeftFront = 0, directionRightBack = 0; //diagonal left
+ case 0: directionLeftFront = 0, directionRightBack = 0;
  break;
- case 1: directionRightFront = 0, directionLeftBack = 0; //diagonal right
+ case 1: directionRightFront = 0, directionLeftBack = 0;
  break;
- case 2: // arc movement left
+ case 2:
  break;
- case 3:  // arc movement right
+ case 3:  
  break; 
- case 4: //normal
+ case 4:
  break;
  }
-/*
+
   if(sideWays == 2){ 
   front_L.spin(fwd, directionLeftFront * calculateLeftSpeed(minimum_velocity, turningRadius), velocityUnits::pct);
   back_L.spin(fwd, directionLeftBack *  calculateLeftSpeed(minimum_velocity, turningRadius), velocityUnits::pct);
@@ -708,20 +738,19 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
   front_R.spin(fwd, directionRightFront *  minimum_velocity, velocityUnits::pct);
   back_R.spin(fwd, directionRightBack *  minimum_velocity, velocityUnits::pct);
   }
-  */
 
-  int sameEncoderValue = 0;
+  task::sleep(90);
+
+  //int sameEncoderValue = 0;
   double distanceTraveled = 0;
 
   while (direction * (distanceTraveled - rightStartPoint) <= direction * wheelRevs) {
-    if ((back_R.velocity(rpm) == 0 || back_L.velocity(rpm) == 0) && sideWays >= 4) {
+    /*if ((back_R.velocity(rpm) == 0 || back_L.velocity(rpm) == 0) && sideWays >= 4) {
       ++sameEncoderValue;
     }
-    
     if (sameEncoderValue > 10) {
       break;
-    }
-    
+    }*/
 
     /*if ((distanceTraveled == distanceTraveledlast) && distanceTraveled > 0.1 && cancel == true) {
       break;
@@ -766,8 +795,8 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
       turningRadius = turningRadiusAtEnd;
       switchStatement = true; 
     }
-      
-      
+
+
     pogChamp = ((back_encoderError + combinedDriftErrorMultiply) * 0.5); //* (circumference);
 
     if(sideWays >= 2 && sideWays < 4 && fabs(get_average_inertial()) > (angleNeeded) && switchStatement == false){    
@@ -822,13 +851,13 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
     printf("Horizontal Tracker %f\n", pogChamp);
     //printf("headingErrorTest %f\n", headingErrorTest);
     //printf("error %f\n", pogChamp);
-    
+
   if(sideWays == 2){
     printf("I get here\n");
     maxVelocity = 30;
     if (direction * (distanceTraveled - leftStartPoint) <
       direction * wheelRevs) {
-      front_L.setVelocity(calculateLeftSpeed( //do front_L.spin(fwd, speed, pct)
+      front_L.setVelocity(calculateLeftSpeed( 
         directionLeftFront * std::min(
           maxVelocity,
           std::min(increasing_speed(
@@ -841,7 +870,7 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
     } else {
       front_L.stop(hold);
     }
-    
+
     if (direction *
       (distanceTraveled - leftStartPoint1) <
       direction * wheelRevs) {
@@ -857,7 +886,7 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
     } else {
       back_L.stop(hold);
     }
-    
+
     if (direction *
       (distanceTraveled - rightStartPoint1) <
       direction * wheelRevs) {
@@ -891,9 +920,9 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
       front_R.stop(hold);
     }
     } 
-    
+
     else if(sideWays == 3){
-  
+
     maxVelocity = 30;
     if (direction * (distanceTraveled - leftStartPoint) <
       direction * wheelRevs) {
@@ -910,7 +939,7 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
     } else {
       front_L.stop(hold);
     }
-    
+
     if (direction *
       (distanceTraveled - leftStartPoint1) <
       direction * wheelRevs) {
@@ -926,7 +955,7 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
     } else {
       back_L.stop(hold);
     }
-    
+
     if (direction *
       (distanceTraveled - rightStartPoint1) <
       direction * wheelRevs) {
@@ -992,7 +1021,7 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
     } else {
       back_L.stop(hold);
     }
-    
+
     if (direction *
       (distanceTraveled - rightStartPoint1) <
       direction * wheelRevs) {
@@ -1110,7 +1139,7 @@ main ()
 }
 */ // This is for testing on an online compiler to make sure the speeds are resonable 
 
-void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, double multiply, double addingFactor) {
+void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, double multiply=0.6, double addingFactor=0) {
 
   static
   const double circumference = 3.14159 * 2.75;
@@ -1157,7 +1186,7 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
 
     double rotationLeft = pow(front_L.rotation(rev), 2);
     double rotationLeftBack = pow(back_L.rotation(rev), 2);
-    distanceTraveled = (back_encoder.rotation(rotationUnits::rev));
+    distanceTraveled = -(back_encoder.rotation(rotationUnits::rev));
 
     double driftLeftError = (front_R.rotation(deg) + back_L.rotation(deg));
     double driftRightError = (front_L.rotation(deg) + back_R.rotation(deg));
@@ -1828,12 +1857,16 @@ void createBallCountTask(){
   task y = task(BallCount);
 }
 
+void createAutoIndexTask() {
+  task ez = task(progAutoIndexCallback) ;
+}
+
 void stopBallCountTask(){
   task::stop(BallCount);
 }
 
 void createPrimeTask(){
-  task poop = task(primeShoot);
+  task primeTask = task(primeShoot);
 }
 
 void stopPrimeTask(){
@@ -1841,7 +1874,7 @@ void stopPrimeTask(){
 }
 
 void createIntakeOnTask(){
-  task ughh = task(intakeOn);
+  task intake = task(intakeOn);
 }
 
 void stopIntakeOn(){
@@ -1871,26 +1904,16 @@ void preAuton() {
   resetFunction();
 }
 
-
+//Radius: 8.75 in
+//Distance from center to auto-aligner: 8.25 inches
+//Distance from center to front of intakes =  14.25 inches
   void homeRowAuton(){/*
-  createBallCountTask();
-  createIntakeOnTask();
-  setDriveSpeed(-5, -5);
-  task::sleep(1000);
+  strafeWalk(25.75, 90, 0) ;
+  autonUnfold() ;
+  rotatePID(45, 90);
   */
-  strafeWalk(10, 90, 0, 0.6, 0)  ;
-  /*
-  moveForwardWalk(49, 80, 45, 0, 0, 0, true, 2, 27, 90, 0, 0, 60, 80, 12);
-  while(true){
-    if(ballFinal >= 1 && ballPos1.reflectivity() < 5){
-    break;
-    }
-    task::sleep(10);
-  }
-  stopIntakeOn();
-  brakeIntake();
-  createPrimeTask();
-  */
+  moveForwardWalk(4.24264*12, 90, 45, 0.6, 2, 0) ;
+  
   /*
   while(true){
     if(waitTillOver == true){
@@ -1898,7 +1921,6 @@ void preAuton() {
     }
     task::sleep(10);
   }
-  stopPrimeTask();
   outtake1BallAuton();
   outtakeIntakes(-5, 100); 
   moveForwardWalk(-24, 80, 90, 0.6, 2, 0);

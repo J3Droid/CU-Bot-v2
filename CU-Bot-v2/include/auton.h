@@ -21,8 +21,6 @@ void setIntakeSpeed(int speed);
 
 void brakeIntake(); 
 
-void progAutoIndex();
-
 void setIndexingSpeed(int speed);
 
 void setSortingSpeed(int speed);
@@ -130,6 +128,8 @@ void stopBallCountTask( void );
 void createPrimeTask( void );
 
 void stopPrimeTask( void );
+
+void createAutoIndexTask(void) ;
 
 void createIntakeOnTask( void );
 
