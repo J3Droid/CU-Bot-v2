@@ -74,12 +74,12 @@ void pre_auton(void) {
 void autonomous(void) {
   // ..........................................................................
 
-  inertialCalibration();
   //testRun();
-  //task fakeSpaceMan = task(update);  
-  homeRowAuton();
+  //task fakeSpaceMan = task(update);
+  inertialCalibration() ;  
+  //homeRowAuton();
   //move_to_target_sync(36, 24, deg_to_rad(90), false, 127, false);
-  //skills(); 
+  skills(); 
   //rotatePID(30, 90);
   //forwardWhileRotating30to90(0, 0, 0, 60);
   // ..........................................................................

@@ -27,6 +27,8 @@ void setSortingSpeed(int speed);
 
 void brakeConveyor();
 
+void stopAutoIndex( void ) ;
+
 void moveForward(int speed, double distanceToTravel);
 
 void moveForwardFast(int speed, double distanceToTravel);

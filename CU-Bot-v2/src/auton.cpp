@@ -1,3 +1,4 @@
+
 #include "vex.h"
 #include "auton.h"
 
@@ -955,7 +956,7 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
     } else {
       back_L.stop(hold);
     }
-
+  maxVelocity = 90 ;
     if (direction *
       (distanceTraveled - rightStartPoint1) <
       direction * wheelRevs) {
@@ -1703,13 +1704,16 @@ void primShooterWithLimit() {
 void score1Ball()
 {
   sorter.spin(fwd, 100, pct);
-    
+  wait (0.5, sec);
+  sorter.stop(brake);
+  /*
   if (ballPos2.reflectivity() < 5)
   {
     sorter.spin(fwd, 100, pct);
     wait (1, sec);
     sorter.stop(brake);
   }
+  */
 }
 
 int outtake0Ball() {
@@ -1881,6 +1885,10 @@ void stopIntakeOn(){
   task::stop(intakeOn);
 }
 
+void stopAutoIndex() {
+  task::stop(progAutoIndexCallback) ;
+}
+
 void outtakeIntakes(double revolutions, int speed){ 
   left_intake.rotateFor(fwd, revolutions, rev, speed, velocityUnits::pct, false);
   right_intake.rotateFor(fwd, revolutions, rev, speed, velocityUnits::pct, false);
@@ -1907,14 +1915,60 @@ void preAuton() {
 //Radius: 8.75 in
 //Distance from center to auto-aligner: 8.25 inches
 //Distance from center to front of intakes =  14.25 inches
-  void homeRowAuton(){/*
+  void homeRowAuton(){
+    
+   /*
   strafeWalk(25.75, 90, 0) ;
   autonUnfold() ;
   rotatePID(45, 90);
+  createIntakeOnTask() ;
+  createAutoIndexTask() ;
+  moveForwardFast(60, 30); // Align with front left corner goal
+  stopIntakeOn() ;
+  brakeIntake() ;
+  stopAutoIndex() ;
+  //wait(0.1, sec);
+  score1Ball();
+  moveForwardFast(60, -30) ;// Back up from front left corner goal
+  rotatePID(90,90) ;
+  strafeWalk(-28, 90, 90) ;
+  createAutoIndexTask() ;
+  moveForwardFast(60, 24) ;
+  stopAutoIndex() ;
+  score1Ball() ;
+  moveForwardFast(60, -35) ;
   */
-  moveForwardWalk(4.24264*12, 90, 45, 0.6, 2, 0) ;
+  strafeWalk(25.75, 90, 0) ;
+  autonUnfold() ;
+  rotatePID(45, 90);
+  createIntakeOnTask() ;
+  createAutoIndexTask() ;
+  moveForwardFast(80, 30); // Align with front left corner goal
+  stopIntakeOn() ;
+  brakeIntake() ;
+  stopAutoIndex() ;
+  score1Ball();
+
+  moveForwardFast(80, -30) ;// Back up from front left corner goal
+  rotatePID(90,90) ;
+  strafeWalk(-28, 90, 90) ;
+  createAutoIndexTask() ;
+  moveForwardFast(80, 24) ;
+  wait(0.1, sec) ;
+  stopAutoIndex() ;
+  score1Ball() ;
+  moveForwardFast(80, -24) ;
   
-  /*
+  strafeWalk(-29, 90, 90) ;
+  rotatePID(135, 90) ;
+  createIntakeOnTask() ;
+  createAutoIndexTask() ;
+  moveForwardFast(90, 50) ;
+  stopIntakeOn() ;
+  brakeIntake() ;
+  stopAutoIndex() ;
+  score1Ball() ;
+  moveForwardFast(90, -12) ; /*
   while(true){
     if(waitTillOver == true){
     break;
@@ -1952,7 +2006,8 @@ void preAuton() {
   */
 }
 
-/*void skills(){
+void skills(){
+  /*
   createIntakeOnTask();
   task::sleep(500);
   moveForwardWalk(12, 80, 0, 0.6, 2, 0);  
@@ -2056,7 +2111,98 @@ void preAuton() {
   moveForwardWalk(48, 80, 0, 1.8, 4, 0);
   //rotatePID(90, 90);
   //moveForwardWalk(48, 80, 90, 2.5, 4, 0);
-}*/
+  */
+  strafeWalk(23, 90, 0) ;
+  autonUnfold() ;
+  wait(1, sec) ;
+  rotatePID(45, 90);
+  createIntakeOnTask() ;
+  createAutoIndexTask() ;
+  moveForwardFast(70, 30); // Align with front left corner goal
+  stopIntakeOn() ;
+  brakeIntake() ;
+  stopAutoIndex() ;
+  score1Ball();
+  wait(0.5, sec) ;
+  moveForwardFast(70, -20) ;// Back up from front left corner goal
+  rotatePID(0,90) ;
+
+  createIntakeOnTask() ;// Pick up ball against wall
+  moveForwardFast(60, 18) ;
+  moveForwardFast(60, -18) ;
+  stopIntakeOn() ;
+  brakeIntake() ;
+
+  strafeWalk(37, 90, 0) ; // Score Ball at vertical wall goal
+  createIntakeOnTask() ;
+  createAutoIndexTask() ;
+  rotatePID(0, 90) ;
+  moveForwardFast(60, 18) ;
+  stopIntakeOn() ;
+  brakeIntake() ;
+  stopAutoIndex() ;
+  score1Ball() ;
+  wait(0.5, sec) ;
+ 
+  moveForwardFast(60, -12) ; // Pick up another ball against wall
+  strafeWalk(36, 80, 0) ;
+  rotatePID(0, 90) ;
+  createIntakeOnTask() ;
+  moveForwardFast(60, 36) ;
+  moveForwardFast(60, -18) ;
+  stopIntakeOn() ;
+  brakeIntake() ;
+  
+  rotatePID(-45, 90) ; // Score at corner
+  createAutoIndexTask() ;
+  moveForwardFast(70, 30); 
+  stopIntakeOn() ;
+  brakeIntake() ;
+  stopAutoIndex() ;
+  score1Ball();
+  wait(0.5, sec) ;
+  moveForwardFast(70, -29) ;
+
+  rotatePID(-180, 90) ;
+  createIntakeOnTask() ;
+  moveForwardFast(60, 36) ;
+  stopIntakeOn() ;
+  brakeIntake() ;
+
+  rotatePID(-90, 90) ;
+  createAutoIndexTask() ;
+  moveForwardFast(60, 36) ;
+  stopAutoIndex() ;
+  score1Ball() ;
+  wait(0.5, sec) ;
+  moveForwardFast(60, -4) ;
+
+  rotatePID(-180, 90) ;
+  createIntakeOnTask() ;
+  moveForwardFast(60, 39) ;
+  stopIntakeOn() ;
+  brakeIntake() ;
+
+  rotatePID(-135, 90) ;
+  createAutoIndexTask() ;
+  moveForwardFast(60, 18) ;
+  stopAutoIndex() ;
+  score1Ball() ;
+  wait(0.5, sec) ;
+  moveForwardFast(60, -18) ;
+
+
+
+
+
+  
+
+
+
+
+
+
+}
 
 //Radius of robot from center = 8.75 inches
 //Distance from center to auto-aligner = 8.25 inches
