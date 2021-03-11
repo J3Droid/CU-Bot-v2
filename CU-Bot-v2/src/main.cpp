@@ -74,9 +74,10 @@ void pre_auton(void) {
 void autonomous(void) {
   // ..........................................................................
 
-  //testRun();
+
   //task fakeSpaceMan = task(update);
   inertialCalibration() ;  
+  //testRun();
   //homeRowAuton();
   //move_to_target_sync(36, 24, deg_to_rad(90), false, 127, false);
   skills(); 

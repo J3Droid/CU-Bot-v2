@@ -758,7 +758,7 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
     }*/
 
     distanceTraveledlast = distanceTraveled; 
-    distanceTraveled = ((left_encoder.rotation(rev) + right_encoder.rotation(rev)) / 2);
+    distanceTraveled = (-(left_encoder.rotation(rev) - right_encoder.rotation(rev)) / 2);
 
     driftLeftError = (front_R.rotation(rev) + back_L.rotation(rev));
     driftRightError = (front_L.rotation(rev) + back_R.rotation(rev));
@@ -769,7 +769,7 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
 
     combinedDriftErrorMultiply = combinedDriftError * (3.1415926);
 
-    back_encoderError = (back_encoder.rotation(rev) * circumference * 1);
+    back_encoderError = -(back_encoder.rotation(rev) * circumference * 1);
 
     if(fabs(back_encoderError) == back_encoderError){
       combinedDriftErrorMultiply = fabs(combinedDriftErrorMultiply);
@@ -1191,14 +1191,14 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
 
     double driftLeftError = (front_R.rotation(deg) + back_L.rotation(deg));
     double driftRightError = (front_L.rotation(deg) + back_R.rotation(deg));
-    double error = (((left_encoder.rotation(rotationUnits::rev)) + (right_encoder.rotation(rotationUnits::rev))) / 2);
+    double error = ((-(left_encoder.rotation(rotationUnits::rev)) - (right_encoder.rotation(rotationUnits::rev))) / 2);
 
-    if (error > -2.5 && error < 2.5) {
+    /*if (error > -2.5 && error < 2.5) {
       headingErrorTest = direction * 0;
     } else {
       headingErrorTest = direction * 0;
-    }
-pogChamp = ((error + combinedDriftErrorMultiply) * 0.5) ;
+    }*/
+    pogChamp = ((error + combinedDriftErrorMultiply) * 0.5) ;
 
     headingError = -(headingOfRobot - get_average_inertial()) * multiply;
     printf("heading error %f\n", headingError);
@@ -1221,7 +1221,7 @@ pogChamp = ((error + combinedDriftErrorMultiply) * 0.5) ;
               distanceTraveled, addingFactor),
             decreasing_speed(leftEndPoint,
               distanceTraveled))) +
-        (headingError) - (headingErrorTest),
+        (headingError) + (headingErrorTest),
         vex::velocityUnits::pct);
     } else {
       front_L.stop(hold);
@@ -1234,7 +1234,7 @@ pogChamp = ((error + combinedDriftErrorMultiply) * 0.5) ;
             std::min(increasing_speed(leftStartPoint1,
                 distanceTraveled, addingFactor),
               decreasing_speed(leftEndPoint1,
-                distanceTraveled))) +
+                distanceTraveled))) -
           (headingError) - (headingErrorTest)),
         vex::velocityUnits::pct);
     } else {
@@ -1249,8 +1249,8 @@ pogChamp = ((error + combinedDriftErrorMultiply) * 0.5) ;
                 rightStartPoint,
                 distanceTraveled, addingFactor),
               decreasing_speed(rightEndPoint,
-                distanceTraveled))) -
-          (headingError) + (headingErrorTest)),
+                distanceTraveled))) +
+          (headingError) - (headingErrorTest)),
         vex::velocityUnits::pct);
     } else {
       front_R.stop(hold);
@@ -2112,104 +2112,95 @@ void skills(){
   //rotatePID(90, 90);
   //moveForwardWalk(48, 80, 90, 2.5, 4, 0);
   */
-  strafeWalk(23, 90, 0) ;
+  strafeWalk(15.25, 90, 0) ;
   autonUnfold() ;
-  wait(1, sec) ;
+  //wait(1, sec) ;
   rotatePID(45, 90);
   createIntakeOnTask() ;
   createAutoIndexTask() ;
-  moveForwardFast(70, 30); // Align with front left corner goal
+  moveForwardWalk(10.75, 90, 45, 0.6, 2, 0); // Align with front left corner goal
   stopIntakeOn() ;
   brakeIntake() ;
   stopAutoIndex() ;
   score1Ball();
-  wait(0.5, sec) ;
-  moveForwardFast(70, -20) ;// Back up from front left corner goal
+  //wait(0.5, sec) ;
+  moveForwardWalk(-27.5, 90, 45, 0.6, 2, 0) ;// Back up from front left corner goal
   rotatePID(0,90) ;
 
   createIntakeOnTask() ;// Pick up ball against wall
-  moveForwardFast(60, 18) ;
-  moveForwardFast(60, -18) ;
+  moveForwardWalk(20, 90, 0, 0.6, 2, 0) ;
+  moveForwardWalk(-20, 90, 0, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
-  strafeWalk(37, 90, 0) ; // Score Ball at vertical wall goal
+  strafeWalk(36, 90, 0) ; // Score Ball at vertical wall goal
   createIntakeOnTask() ;
   createAutoIndexTask() ;
-  rotatePID(0, 90) ;
-  moveForwardFast(60, 18) ;
+  //rotatePID(0, 90) ;
+  moveForwardWalk(15.75, 90, 0, 0.6, 2, 0) ;
   stopIntakeOn() ;
   brakeIntake() ;
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
  
-  moveForwardFast(60, -12) ; // Pick up another ball against wall
+  moveForwardWalk(-15.75, 90, 0, 0.6, 2, 0) ;  // Pick up another ball against wall
   strafeWalk(36, 80, 0) ;
-  rotatePID(0, 90) ;
+  //rotatePID(0, 90) ;
   createIntakeOnTask() ;
-  moveForwardFast(60, 36) ;
-  moveForwardFast(60, -18) ;
+  moveForwardWalk(20, 90, 0, 0.6, 2, 0) ; 
+  moveForwardWalk(-20, 90, 0, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
   
   rotatePID(-45, 90) ; // Score at corner
   createAutoIndexTask() ;
-  moveForwardFast(70, 30); 
+  moveForwardWalk(27.5, 90, -45, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
   stopAutoIndex() ;
   score1Ball();
   wait(0.5, sec) ;
-  moveForwardFast(70, -29) ;
+  moveForwardWalk(-44.5, 90, -45, 0.6, 2, 0) ; 
 
   rotatePID(-180, 90) ;
   createIntakeOnTask() ;
-  moveForwardFast(60, 36) ;
+  moveForwardWalk(36, 90, -180, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
   rotatePID(-90, 90) ;
   createAutoIndexTask() ;
-  moveForwardFast(60, 36) ;
+  moveForwardWalk(36, 90, -90, 0.6, 2, 0) ; 
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
-  moveForwardFast(60, -4) ;
+  moveForwardWalk(-4, 90, -90, 0.6, 2, 0) ; 
 
   rotatePID(-180, 90) ;
   createIntakeOnTask() ;
-  moveForwardFast(60, 39) ;
+  moveForwardWalk(39, 90, -180, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
   rotatePID(-135, 90) ;
   createAutoIndexTask() ;
-  moveForwardFast(60, 18) ;
+  moveForwardWalk(18, 90, -135, 0.6, 2, 0) ; 
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
-  moveForwardFast(60, -18) ;
-
-
-
-
-
-  
-
-
-
-
-
+  moveForwardWalk(-18, 90, -135, 0.6, 2, 0) ; 
 
 }
 
 //Radius of robot from center = 8.75 inches
 //Distance from center to auto-aligner = 8.25 inches
-//Distance from center to front of intakes = 14.25 inches
+//Distance from center to front of intakes = 15 inches
 void testRun()
 {
-  stopIntakeOn();
+  //oveForwardWalk(72, 90, 0, 0.6, 2, 0);
+  strafeWalk(72, 90, 0) ;
+  /*stopIntakeOn();
   brakeIntake();
   //brakeIndexer();
   strafeWalk(15.25, 80, 0, 0.6, 0); // Move in front of front left corner goal
@@ -2334,6 +2325,7 @@ void testRun()
   score1Ball();
   wait(0.5, sec);
   moveForwardWalk(-44, 80, -225, 0.6, 2, 0); // Back up from front left corner goal
+  */
 
  /*
   moveForwardWalk(36, 80, 0, 0.6, 2, 0);
