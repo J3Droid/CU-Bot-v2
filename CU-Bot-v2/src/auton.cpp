@@ -1140,7 +1140,11 @@ main ()
 }
 */ // This is for testing on an online compiler to make sure the speeds are resonable 
 
-void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, double multiply=0.6, double addingFactor=0) {
+void strafeWalk (double distanceIn, double maxVelocity, double headingOfRobot, double multiply = 0.6, double addingFactor = 0) 
+{
+  double driftFrontError;
+  double driftBackError;
+  double forwardError;
 
   static
   const double circumference = 3.14159 * 2.75;
@@ -1175,7 +1179,7 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
   //double driftRightError = (front_L.rotation(deg) + back_R.rotation(deg));
   //double previousOffset = (driftLeftError - driftRightError) / 2;
 
-  while (direction * (distanceTraveled - rightStartPoint) <=direction * wheelRevs) {
+  while (direction * (distanceTraveled - rightStartPoint) <= direction * wheelRevs) {
     distanceTraveledlast = distanceTraveled;
     if (back_R.velocity(rpm) == 0) {
       ++sameEncoderValue;
@@ -1185,26 +1189,45 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
       break;
     }
 
-    double rotationLeft = pow(front_L.rotation(rev), 2);
-    double rotationLeftBack = pow(back_L.rotation(rev), 2);
+    //double rotationLeft = pow(front_L.rotation(rev), 2);
+    //double rotationLeftBack = pow(back_L.rotation(rev), 2);
+
+
     distanceTraveled = -(back_encoder.rotation(rotationUnits::rev));
 
-    double driftLeftError = (front_R.rotation(deg) + back_L.rotation(deg));
-    double driftRightError = (front_L.rotation(deg) + back_R.rotation(deg));
-    double error = ((-(left_encoder.rotation(rotationUnits::rev)) - (right_encoder.rotation(rotationUnits::rev))) / 2);
+    driftFrontError = (front_L.rotation(rev) + back_R.rotation(rev));
+    driftBackError = (front_R.rotation(rev) + back_L.rotation(rev));
+    combinedDriftError = (-(driftFrontError + driftBackError));
+    combinedDriftErrorMultiply = combinedDriftError * (3.1415926);
+
+    forwardError = ((((left_encoder.rotation(rotationUnits::rev)) + (right_encoder.rotation(rotationUnits::rev))) / 2) * circumference);
+
+    if(fabs(forwardError) == forwardError){
+      combinedDriftErrorMultiply = fabs(combinedDriftErrorMultiply);
+      //printf("i am failing");
+    }
+    else{
+      if(fabs(combinedDriftErrorMultiply) == combinedDriftErrorMultiply){
+        combinedDriftErrorMultiply = (-1) * (combinedDriftErrorMultiply);
+      }
+      else {
+       combinedDriftErrorMultiply = combinedDriftErrorMultiply * 1;
+      }
+    }
 
     /*if (error > -2.5 && error < 2.5) {
       headingErrorTest = direction * 0;
     } else {
       headingErrorTest = direction * 0;
     }*/
-    pogChamp = ((error + combinedDriftErrorMultiply) * 0.5) ;
+    pogChamp = ((forwardError + combinedDriftErrorMultiply) * 0.5) ;
 
     headingError = -(headingOfRobot - get_average_inertial()) * multiply;
     printf("heading error %f\n", headingError);
     printf("encoder value %f\n", distanceTraveled);
     printf("wheelRevs %f\n", wheelRevs);
     printf("encoder error %f\n", rightEndPoint);
+
     if (fabs(pogChamp) > 0.1) {
       headingErrorTest = (pogChamp) * 2;
     } 
@@ -1221,7 +1244,7 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
               distanceTraveled, addingFactor),
             decreasing_speed(leftEndPoint,
               distanceTraveled))) +
-        (headingError) + (headingErrorTest),
+        (headingError) - (headingErrorTest),
         vex::velocityUnits::pct);
     } else {
       front_L.stop(hold);
@@ -1235,7 +1258,7 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
                 distanceTraveled, addingFactor),
               decreasing_speed(leftEndPoint1,
                 distanceTraveled))) -
-          (headingError) - (headingErrorTest)),
+          (headingError) + (headingErrorTest)),
         vex::velocityUnits::pct);
     } else {
       back_L.stop(hold);
@@ -1250,7 +1273,7 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
                 distanceTraveled, addingFactor),
               decreasing_speed(rightEndPoint,
                 distanceTraveled))) +
-          (headingError) - (headingErrorTest)),
+          (headingError) + (headingErrorTest)),
         vex::velocityUnits::pct);
     } else {
       front_R.stop(hold);
@@ -1264,7 +1287,7 @@ void strafeWalk(double distanceIn, double maxVelocity, double headingOfRobot, do
               distanceTraveled, addingFactor),
             decreasing_speed(rightEndPoint1,
               distanceTraveled))) -
-        (headingError) + (headingErrorTest),
+        (headingError) - (headingErrorTest),
         vex::velocityUnits::pct);
     } else {
       back_R.stop(hold);
@@ -2198,7 +2221,7 @@ void skills(){
 //Distance from center to front of intakes = 15 inches
 void testRun()
 {
-  //oveForwardWalk(72, 90, 0, 0.6, 2, 0);
+  //(72, 90, 0, 0.6, 2, 0);
   strafeWalk(72, 90, 0) ;
   /*stopIntakeOn();
   brakeIntake();
