@@ -1728,7 +1728,7 @@ void primShooterWithLimit() {
 void score1Ball()
 {
   sorter.spin(fwd, 100, pct);
-  wait (0.5, sec);
+  wait (0.75, sec);
   sorter.stop(brake);
   /*
   if (ballPos2.reflectivity() < 5)
@@ -1941,58 +1941,38 @@ void preAuton() {
 //Distance from center to front of intakes =  14.25 inches
   void homeRowAuton(){
     
-   /*
-  strafeWalk(25.75, 90, 0) ;
+  strafeWalk(25.75, 90, 0) ; //Strafe to move away from the wall and unfold
   autonUnfold() ;
-  rotatePID(45, 90);
+  rotatePID(45, 90); // Align with front left corner goal
   createIntakeOnTask() ;
   createAutoIndexTask() ;
-  moveForwardFast(60, 30); // Align with front left corner goal
+  moveForwardFast(80, 30);  //Approach first goal
   stopIntakeOn() ;
   brakeIntake() ;
   stopAutoIndex() ;
-  //wait(0.1, sec);
-  score1Ball();
-  moveForwardFast(60, -30) ;// Back up from front left corner goal
-  rotatePID(90,90) ;
-  strafeWalk(-28, 90, 90) ;
-  createAutoIndexTask() ;
-  moveForwardFast(60, 24) ;
-  stopAutoIndex() ;
-  score1Ball() ;
-  moveForwardFast(60, -35) ;
-  */
-  strafeWalk(25.75, 90, 0) ;
-  autonUnfold() ;
-  rotatePID(45, 90);
-  createIntakeOnTask() ;
-  createAutoIndexTask() ;
-  moveForwardFast(80, 30); // Align with front left corner goal
-  stopIntakeOn() ;
-  brakeIntake() ;
-  stopAutoIndex() ;
-  score1Ball();
+  score1Ball(); //Score at first goal
 
-  moveForwardFast(80, -30) ;// Back up from front left corner goal
-  rotatePID(90,90) ;
-  strafeWalk(-28, 90, 90) ;
+  moveForwardFast(80, -30) ;// Back up from corner goal
+  rotatePID(90,90) ; //100% certainty of alignment
+  strafeWalk(-28, 90, 90) ; // Strafe towards middle goal
   createAutoIndexTask() ;
   moveForwardFast(80, 24) ;
   wait(0.1, sec) ;
-  stopAutoIndex() ;
+  stopAutoIndex() ; // Score at middle goal
   score1Ball() ;
   moveForwardFast(80, -24) ;
   
-  strafeWalk(-29, 90, 90) ;
-  rotatePID(135, 90) ;
+  strafeWalk(-29, 90, 90) ; // Strafe towards corner goal
+  rotatePID(135, 90) ; // Align with last corner goal
   createIntakeOnTask() ;
   createAutoIndexTask() ;
   moveForwardFast(90, 50) ;
   stopIntakeOn() ;
   brakeIntake() ;
   stopAutoIndex() ;
-  score1Ball() ;
-  moveForwardFast(90, -12) ; /*
+  score1Ball() ; // Score at corner goal
+  moveForwardFast(90, -12) ; //Back away
+  /*
   while(true){
     if(waitTillOver == true){
     break;
@@ -2031,213 +2011,121 @@ void preAuton() {
 }
 
 void skills(){
-  /*
-  createIntakeOnTask();
-  task::sleep(500);
-  moveForwardWalk(12, 80, 0, 0.6, 2, 0);  
-  rotatePID(45, 90);
-  moveForwardWalk(32, 80, 45, 0.6, 1, 0);  
-  rotatePID(90, 90);
-  stopIntakeOn();
-  brakeIntake();
-  createPrimeTask();
-  moveForwardWalk(10, 80, 90, 0.6, 2, 0);
-  outtake1BallAuton();
-  moveForwardWalk(-11, 80, 90, 0.6, 2, 0);  
-  rotatePID(-45, 90);
-  createIntakeOnTask();
-  moveForwardWalk(48, 80, -45, 0.6, 1, 0);  
-  rotatePID(45, 90); 
-  stopIntakeOn();
-  brakeIntake();
-  createPrimeTask();
-  moveForwardWalk(3, 80, 45, 0.6, 2, 0);  
-  waitTillOver = false;
-  while(true){
-    if(waitTillOver == true){
-    break;
-    }
-    task::sleep(10);
-  }
-  stopPrimeTask();
-  outtake1BallAuton();
-  moveForwardWalk(-18, 80, 45, 0.6, 2, 0); 
-  createIntakeOnTask();
-  rotatePID(-45, 90);
-  moveForwardWalk(48, 70, -45, 0.6, 1, 0);   
-  moveForwardWalk(-8, 80, -45, 0.6, 2, 0); 
-  rotatePID(0, 90);
-  stopIntakeOn();
-  brakeIntake();
-  createPrimeTask();
-  moveForwardWalk(47, 80, 0, 0.6, 1, 0);
-  outtake1BallAuton();
-  moveForwardWalk(-44, 80, -5, 0.6, 0, 0);
-  createIntakeOnTask();
-  rotatePID(-135, 90);
-  moveForwardWalk(29, 80, -135, 0.6, 1, 0);
-  rotatePID(-45, 90);
-  stopIntakeOn();
-  brakeIntake();
-  createPrimeTask();
-  moveForwardWalk(30, 80, -45, 0.6, 1, 0);
-  outtake1BallAuton();
-  moveForwardWalk(-5, 80, -45, 0.6, 2, 0);
-  rotatePID(-135, 90);
-  createIntakeOnTask();
-  moveForwardWalk(50, 80, -135, 0, 1, 0);
-  rotatePID(-90, 90);
-  stopIntakeOn();
-  brakeIntake();
-  createPrimeTask();
-  moveForwardWalk(10, 80, -90, 0, 2, 0);
-  outtake1BallAuton();
-  moveForwardWalk(-13, 80, -90, 0.6, 2, 0);  
-  rotatePID(-225, 90);
-  createIntakeOnTask();
-  moveForwardWalk(48, 80, -225, 0.6, 1, 0);  
-  rotatePID(-135, 90); 
-  stopIntakeOn();
-  brakeIntake();
-  createPrimeTask();
-  moveForwardWalk(4, 80, -135, 0.6, 2, 0);  
-  waitTillOver = false;
-  while(true){
-    if(waitTillOver == true){
-    break;
-    }
-    task::sleep(10);
-  }
-  stopPrimeTask();
-  outtake1BallAuton();
-  moveForwardWalk(-8, 80, -135, 0.6, 2, 0);  //-135
-  createIntakeOnTask();
-  rotatePID(45, 90);     //45
-  moveForwardWalk(10, 80, 45, 0.6, 2, 0, false);  //45
-  strafeWalk(-4.5, 40, 45, 0.6, 0);
-  stopIntakeOn();
-  brakeIntake();
-  moveForwardFast(40, 20);
-  createPrimeTask();
-  rotatePID(30, 90);
-  outtake1BallAutonSlow();
-  moveForwardWalk(-22, 80, 45, 0.6, 1, 0);
-  rotatePID(135, 90);
-  createIntakeOnTask();
-  moveForwardWalk(34, 80, 135, 0.6, 1, 0);
-  moveForwardWalk(-2, 80, 135, 0.6, 2, 0);
-  rotatePID(180, 90);
-  stopIntakeOn();
-  brakeIntake();
-  createPrimeTask();
-  moveForwardWalk(40, 60, 180, 0.6, 2, 0);
-  outtake1BallAuton();
-  moveForwardWalk(48, 80, 0, 1.8, 4, 0);
-  //rotatePID(90, 90);
-  //moveForwardWalk(48, 80, 90, 2.5, 4, 0);
-  */
+
   moveForwardWalk(-3, 90, 0, 0.6, 2, 0) ; 
+  moveForwardWalk(2.5, 90, 0 ,0.6, 2, 0) ;
   autonUnfold() ;
+  wait(0.5, sec) ;
   rotatePID(0, 90) ;
   createIntakeOnTask() ;
   moveForwardWalk(30, 90, 0, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
   //wait(1, sec) ;
-  rotatePID(67, 90); //used to be 67.5
-  createIntakeOnTask() ;
+  rotatePID(68, 90); //used to be 67.5
   createAutoIndexTask() ;
-  moveForwardWalk(10, 90, 45, 0.6, 2, 0); // Align with front left corner goal
-  stopIntakeOn() ;
-  brakeIntake() ;
+  moveForwardWalk(15, 90, 68, 0.6, 2, 0); // Align with Goal A
   stopAutoIndex() ;
   score1Ball();
   //wait(0.5, sec) ;
-  moveForwardWalk(-27.5, 90, 45, 0.6, 2, 0) ;// Back up from front left corner goal
-  rotatePID(0,90) ;
-
+  moveForwardWalk(-26.5, 90, 68, 0.6, 2, 0) ;// Back up from Goal A
+  rotatePID(23,90) ;
   createIntakeOnTask() ;// Pick up ball against wall
-  moveForwardWalk(18, 90, 0, 0.6, 2, 0) ;
-  moveForwardWalk(-9, 90, 0, 0.6, 2, 0) ; 
+  moveForwardWalk(20, 90, 23, 0.6, 2, 0) ;
+  moveForwardWalk(-9, 90, 23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
-  strafeWalk(36, 90, 0) ; // Score Ball at vertical wall goal
-  createIntakeOnTask() ;
+  strafeWalk(36, 90, 23) ; // Score ball at Goal B
   createAutoIndexTask() ;
   //rotatePID(0, 90) ;
-  moveForwardWalk(3.75, 90, 0, 0.6, 2, 0) ;
-  stopIntakeOn() ;
-  brakeIntake() ;
+  moveForwardWalk(3.75, 90, 23, 0.6, 2, 0) ;
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
  
-  moveForwardWalk(-3.75, 90, 0, 0.6, 2, 0) ;  // Pick up another ball against wall
-  rotatePID(0, 90) ;
-  strafeWalk(36, 80, 0) ;
-  //rotatePID(0, 90) ;
+  moveForwardWalk(-3.75, 90, 23, 0.6, 2, 0) ;  // Pick up another ball against wall
+  rotatePID(23, 90) ;
+  strafeWalk(36, 90, 23) ;
+  rotatePID(23,90) ;
   createIntakeOnTask() ;
-  moveForwardWalk(10, 90, 0, 0.6, 2, 0) ; 
-  moveForwardWalk(-23, 90, 0, 0.6, 2, 0) ; 
+  moveForwardWalk(9, 90, 23, 0.6, 2, 0) ; 
+  moveForwardWalk(-21, 90, 23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
   
-  rotatePID(-45, 90) ; // Score at corner
+  rotatePID(-22, 90) ; // Score at Goal C
   createAutoIndexTask() ;
-  moveForwardWalk(30.5, 90, -45, 0.6, 2, 0) ; 
+  moveForwardWalk(30, 90, -22, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
   stopAutoIndex() ;
   score1Ball();
   wait(0.5, sec) ;
-  moveForwardWalk(-42.5, 90, -45, 0.6, 2, 0) ; 
+  moveForwardWalk(-39.5, 90, -22, 0.6, 2, 0) ; 
 
-  rotatePID(-180, 90) ;
+  rotatePID(-180+23, 90) ; // Pick up ball at opposite side
   createIntakeOnTask() ;
-  moveForwardWalk(22, 90, -180, 0.6, 2, 0) ; 
+  moveForwardWalk(25, 90, -180+23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
-  rotatePID(-90, 90) ;
+  rotatePID(-90+23, 90) ; // Score at Goal F
   createAutoIndexTask() ;
-  moveForwardWalk(28, 90, -90, 0.6, 2, 0) ; 
+  moveForwardWalk(29.75, 90, -90+23, 0.6, 2, 0) ; 
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
-  moveForwardWalk(-2, 90, -90, 0.6, 2, 0) ; 
+  moveForwardWalk(-2, 90, -90+23, 0.6, 2, 0) ; 
 
-  rotatePID(-180, 90) ;
+  rotatePID(-180+23, 90) ; // Pick up ball between Goals F and I
   createIntakeOnTask() ;
-  moveForwardWalk(48, 90, -180, 0.6, 2, 0) ; 
+  moveForwardWalk(47, 90, -180+23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
-  rotatePID(-135, 90) ;
+  rotatePID(-135+23, 90) ; //Score at Goal I
   createAutoIndexTask() ;
-  moveForwardWalk(10, 90, -135, 0.6, 2, 0) ; 
+  moveForwardWalk(12, 90, -135+23, 0.6, 2, 0) ; 
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
-  moveForwardWalk(-27.5, 90, -135, 0.6, 2, 0) ; 
+  moveForwardWalk(-26.5, 90, -135+23, 0.6, 2, 0) ; 
 
-  rotatePID(-180,90) ;
+  rotatePID(-180+23,90) ;
   createIntakeOnTask() ;// Pick up ball against wall
-  moveForwardWalk(18, 90, 0, 0.6, 2, 0) ;
-  moveForwardWalk(-9, 90, 0, 0.6, 2, 0) ; 
+  moveForwardWalk(20, 90, -180+23, 0.6, 2, 0) ;
+  moveForwardWalk(-9, 90, -180+23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
-  strafeWalk(36, 90, 0) ; // Score Ball at vertical wall goal
-  createIntakeOnTask() ;
+  strafeWalk(36, 90, -180+23) ; // Score ball at Goal H
   createAutoIndexTask() ;
-  //rotatePID(0, 90) ;
-  moveForwardWalk(3.75, 90, 0, 0.6, 2, 0) ;
-  stopIntakeOn() ;
-  brakeIntake() ;
+  //rotatePID(-180+23, 90) ;
+  moveForwardWalk(6, 90, -180+23, 0.6, 2, 0) ;
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
+
+  moveForwardWalk(-3.75, 90, -180+23, 0.6, 2, 0) ;  // Pick up another ball against wall
+  rotatePID(-180+23, 90) ;
+  strafeWalk(36, 90, -180+23) ;
+  rotatePID(-180+23,90) ;
+  createIntakeOnTask() ;
+  moveForwardWalk(12, 90, -180+23, 0.6, 2, 0) ; 
+  moveForwardWalk(-22, 90, -180+23, 0.6, 2, 0) ; 
+  stopIntakeOn() ;
+  brakeIntake() ;
+  
+  rotatePID(-202, 90) ; // Score at Goal G
+  createAutoIndexTask() ;
+  moveForwardWalk(30, 90, -202, 0.6, 2, 0) ; 
+  stopAutoIndex() ;
+  score1Ball();
+  wait(0.5, sec) ;
+  moveForwardWalk(-40.5, 90, -202, 0.6, 2, 0) ; 
+
+
 
 
 
@@ -2249,12 +2137,12 @@ void skills(){
 void testRun()
 {
   //(72, 90, 0, 0.6, 2, 0);
-  moveForwardWalk(-3, 90, 0, 0.6, 2, 0) ; 
-  createIntakeOnTask() ;
+  createAutoIndexTask() ;
   moveForwardWalk(30, 90, 0, 0.6, 2, 0) ; 
-  stopIntakeOn() ;
-  brakeIntake() ;
-
+  stopAutoIndex() ;
+  score1Ball();
+  wait(0.5, sec) ;
+  moveForwardWalk(-40.5, 90, 0, 0.6, 2, 0) ; 
   /*stopIntakeOn();
   brakeIntake();
   //brakeIndexer();
