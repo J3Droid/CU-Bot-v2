@@ -76,9 +76,8 @@ void autonomous(void) {
 
 
   //task fakeSpaceMan = task(update);
-  inertialCalibration() ;  
-  testRun();
-  //homeRowAuton();
+  //testRun();
+  homeRowAuton();
   //move_to_target_sync(36, 24, deg_to_rad(90), false, 127, false);
   //skills(); 
   //rotatePID(30, 90);

@@ -357,6 +357,12 @@ void brakeIntake()
   left_intake.stop(brake);
 }
 
+void brakeIntakeOut()
+{
+  right_intake.stop(brake);
+  left_intake.stop(brake);
+}
+
 /*void brakeIndexer()
 {
   indexer.stop(brake);
@@ -555,6 +561,7 @@ void deaccel(int speed, double dist, double strength)
 }
 
 void moveForwardFast(int speed, double distanceToTravel) 
+
 {
   double wheelDiameterIN = 3.25;
   double travelTargetCM = distanceToTravel; // this is the distance it goes which is set as a variable
@@ -745,17 +752,19 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
   //int sameEncoderValue = 0;
   double distanceTraveled = 0;
 
-  while (direction * (distanceTraveled - rightStartPoint) <= direction * wheelRevs) {
+
+  while ((direction * (distanceTraveled - rightStartPoint) <= direction * wheelRevs)){
     /*if ((back_R.velocity(rpm) == 0 || back_L.velocity(rpm) == 0) && sideWays >= 4) {
       ++sameEncoderValue;
     }
     if (sameEncoderValue > 10) {
       break;
     }*/
-
-    /*if ((distanceTraveled == distanceTraveledlast) && distanceTraveled > 0.1 && cancel == true) {
+/*
+    if ((distanceTraveled == distanceTraveledlast) && distanceTraveled > 0.1 && cancel == true) {
       break;
-    }*/
+    }
+    */
 
     distanceTraveledlast = distanceTraveled; 
     distanceTraveled = (-(left_encoder.rotation(rev) - right_encoder.rotation(rev)) / 2);
@@ -1057,6 +1066,7 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
     }
     } 
     task::sleep(10);
+
   }
   holdDrive();
   switchStatement = false; 
@@ -1524,6 +1534,16 @@ int intakeOn() {
   }
 }
 
+int intakeOut() {
+  while(true){
+    right_intake.spin(directionType::rev, intakeSpeedPCT, voltageUnits::volt);
+    left_intake.spin(directionType::rev, intakeSpeedPCT, voltageUnits::volt);
+    /*if(ballPos1.reflectivity() >= 10) {
+      task intakingBalls = task(scoreGoal);
+    }*/
+  }
+}
+
 void intakeOff(){
   right_intake.stop(brake);
   left_intake.stop(brake);
@@ -1905,8 +1925,16 @@ void createIntakeOnTask(){
   task intake = task(intakeOn);
 }
 
+void createIntakeOutTask() {
+  task intakeO = task(intakeOut) ;
+}
+
 void stopIntakeOn(){
   task::stop(intakeOn);
+}
+
+void stopIntakeOut() {
+  task::stop(intakeOut) ;
 }
 
 void stopAutoIndex() {
@@ -1941,37 +1969,42 @@ void preAuton() {
 //Distance from center to front of intakes =  14.25 inches
   void homeRowAuton(){
     
-  strafeWalk(25.75, 90, 0) ; //Strafe to move away from the wall and unfold
+  moveForwardWalk(-3, 90, 0, 0.6, 2, 0) ; 
+  moveForwardWalk(2.5, 90, 0 ,0.6, 2, 0) ;
   autonUnfold() ;
-  rotatePID(45, 90); // Align with front left corner goal
+  wait(0.5, sec) ;
+  rotatePID(0, 90) ;
+  moveForwardWalk(30, 90, 0, 0.6, 2, 0) ; 
+  //wait(1, sec) ;
+  rotatePID(68, 90); //used to be 67.5
   createIntakeOnTask() ;
   createAutoIndexTask() ;
-  moveForwardFast(80, 30);  //Approach first goal
+  moveForwardWalk(15, 90, 68, 0.6, 2, 0); // Align with Goal A
   stopIntakeOn() ;
   brakeIntake() ;
   stopAutoIndex() ;
-  score1Ball(); //Score at first goal
+  score1Ball();
 
-  moveForwardFast(80, -30) ;// Back up from corner goal
-  rotatePID(90,90) ; //100% certainty of alignment
-  strafeWalk(-28, 90, 90) ; // Strafe towards middle goal
-  createAutoIndexTask() ;
-  moveForwardFast(80, 24) ;
-  wait(0.1, sec) ;
-  stopAutoIndex() ; // Score at middle goal
-  score1Ball() ;
-  moveForwardFast(80, -24) ;
-  
-  strafeWalk(-29, 90, 90) ; // Strafe towards corner goal
-  rotatePID(135, 90) ; // Align with last corner goal
+  moveForwardWalk(-26.5, 90, 68, 0.6, 2, 0) ;// Back up from Goal A
+  rotatePID(68+135, 90) ;
+  moveForwardWalk(75, 90, 68+135, 0.6, 2, 0)  ;
+  rotatePID(68+90, 90) ; // Align with Goal G
+
   createIntakeOnTask() ;
   createAutoIndexTask() ;
-  moveForwardFast(90, 50) ;
+  moveForwardWalk(21, 90, 68+90, 0.6, 2, 0) ;
   stopIntakeOn() ;
   brakeIntake() ;
   stopAutoIndex() ;
-  score1Ball() ; // Score at corner goal
-  moveForwardFast(90, -12) ; //Back away
+  score1Ball() ;
+
+  moveForwardWalk(-26.5, 90, 68+90, 0.6, 2, 0) ;// Back up from Goal A
+
+
+
+
+
+
   /*
   while(true){
     if(waitTillOver == true){
@@ -2072,7 +2105,7 @@ void skills(){
 
   rotatePID(-90+23, 90) ; // Score at Goal F
   createAutoIndexTask() ;
-  moveForwardWalk(29.75, 90, -90+23, 0.6, 2, 0) ; 
+  moveForwardWalk(29.5, 90, -90+23, 0.6, 2, 0) ; 
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
@@ -2119,11 +2152,11 @@ void skills(){
   
   rotatePID(-202, 90) ; // Score at Goal G
   createAutoIndexTask() ;
-  moveForwardWalk(30, 90, -202, 0.6, 2, 0) ; 
+  moveForwardFast(90, 30) ; 
   stopAutoIndex() ;
   score1Ball();
   wait(0.5, sec) ;
-  moveForwardWalk(-40.5, 90, -202, 0.6, 2, 0) ; 
+  moveForwardFast(90, -40.5) ; 
 
 
 
@@ -2137,12 +2170,13 @@ void skills(){
 void testRun()
 {
   //(72, 90, 0, 0.6, 2, 0);
+  rotatePID(-202, 90) ;
   createAutoIndexTask() ;
-  moveForwardWalk(30, 90, 0, 0.6, 2, 0) ; 
+  moveForwardWalk(30, 90, -202, 0.6, 2, 0) ; 
   stopAutoIndex() ;
   score1Ball();
   wait(0.5, sec) ;
-  moveForwardWalk(-40.5, 90, 0, 0.6, 2, 0) ; 
+  moveForwardWalk(-40.5, 90, -202, 0.6, 2, 0) ; 
   /*stopIntakeOn();
   brakeIntake();
   //brakeIndexer();

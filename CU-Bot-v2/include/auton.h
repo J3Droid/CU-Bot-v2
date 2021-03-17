@@ -21,6 +21,10 @@ void setIntakeSpeed(int speed);
 
 void brakeIntake(); 
 
+void stopIntakeOut() ;
+
+void brakeIntakeOut() ;
+
 void setIndexingSpeed(int speed);
 
 void setSortingSpeed(int speed);
@@ -134,6 +138,8 @@ void stopPrimeTask( void );
 void createAutoIndexTask(void) ;
 
 void createIntakeOnTask( void );
+
+void createIntakeOutTask( void ) ;
 
 void stopIntakeOn( void );
 
