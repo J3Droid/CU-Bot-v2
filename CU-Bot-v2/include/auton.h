@@ -120,14 +120,21 @@ int intakeOn( void );
 void intakeOff( void );
 
 //Custom made scoring function:
-void score1Ball();
+int score1Ball( void );
+int intakeDescore(void ) ;
 
+void createScore1BallTask( void ) ;
+void stopScore1Ball(void ) ;
 void outtake1BallAuton( void );
 void outtake1BallAutonSlow( void );
 void outtake2BallAuton( void );
 void outtake3BallAuton( void );
 
 void createBallCountTask( void );
+
+void createIntakeDescoreTask(void) ;
+
+void stopIntakeDescore(void) ;
 
 void stopBallCountTask( void );
 

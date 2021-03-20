@@ -6,6 +6,8 @@ using namespace vex;
 
 int intakeSpeedPCT = 100;
 
+int intakeSpeedDescore = 50;
+
 int ballFinal = 1;
 
 bool checkingI = true;
@@ -630,7 +632,7 @@ double increasing_speed(double starting_point, double current_position, double a
 double decreasing_speed(double ending_point, double current_position) 
 { // how fast the robot starts to slow down before reaching its distance
   static
-  const double deceleration_constant = 40.0; //tuned 40
+  const double deceleration_constant = 50.0; //tuned 40
   return deceleration_constant * fabs(current_position - ending_point) +
     minimum_velocity;
 }
@@ -1524,6 +1526,35 @@ void strafeWhileTurning(int speed, double distance){
 strafeWalk(-10, 80, 90, 0.6, 0); 
 }
 
+void pivotBack(int angle, int maxPower) {
+  int maxError = 0;
+  int timer = 0;
+  int minVelocity = 1;
+  exit_function = false;
+  while (fabs(get_average_inertial() - angle) > maxError && !exit_function) {
+    int PIDPower = iRotatePid(angle);
+    printf("heading  %f\n", right_inertial.rotation());
+    printf("heading Left  %f\n", left_inertial.rotation());
+    printf("heading average  %f\n", get_average_inertial());
+    int power = abs(PIDPower) < maxPower ? PIDPower : maxPower * (PIDPower / abs(PIDPower));
+    back_L.spin(fwd,  -power, velocityUnits::pct);
+    front_R.stop(brake) ;
+    front_L.stop(brake) ;
+    back_R.spin(fwd, power, velocityUnits::pct);
+    if (timer > 500 && fabs(back_L.velocity(pct)) < minVelocity) {
+      exit_function = true;
+    }
+    wait(10, msec);
+    timer += 10;
+  }
+
+  front_R.stop(hold);
+  back_R.stop(hold);
+  front_L.stop(hold);
+  back_L.stop(hold);
+}
+
+
 int intakeOn() {
   while(true){
     right_intake.spin(directionType::fwd, intakeSpeedPCT, voltageUnits::volt);
@@ -1538,6 +1569,18 @@ int intakeOut() {
   while(true){
     right_intake.spin(directionType::rev, intakeSpeedPCT, voltageUnits::volt);
     left_intake.spin(directionType::rev, intakeSpeedPCT, voltageUnits::volt);
+    /*if(ballPos1.reflectivity() >= 10) {
+      task intakingBalls = task(scoreGoal);
+    }*/
+  }
+}
+
+int intakeDescore() {
+  wait(0.5, sec) ;
+  while(true){
+    right_intake.spin(directionType::rev, intakeSpeedDescore, voltageUnits::volt);
+    left_intake.spin(directionType::rev, intakeSpeedDescore, voltageUnits::volt);
+    indexer.spin(directionType::rev, intakeSpeedDescore, voltageUnits::volt) ;
     /*if(ballPos1.reflectivity() >= 10) {
       task intakingBalls = task(scoreGoal);
     }*/
@@ -1745,10 +1788,10 @@ void primShooterWithLimit() {
   }
 }*/
 
-void score1Ball()
+int score1Ball()
 {
   sorter.spin(fwd, 100, pct);
-  wait (0.75, sec);
+  wait (0.5, sec);
   sorter.stop(brake);
   /*
   if (ballPos2.reflectivity() < 5)
@@ -1758,6 +1801,7 @@ void score1Ball()
     sorter.stop(brake);
   }
   */
+  return 1;
 }
 
 int outtake0Ball() {
@@ -1905,6 +1949,21 @@ void createBallCountTask(){
   task y = task(BallCount);
 }
 
+void createScore1BallTask() {
+  task ball = task(score1Ball) ;
+}
+
+void createIntakeDescoreTask() {
+  task descore = task(intakeDescore) ;
+}
+
+void stopIntakeDescore() {
+  task::stop(intakeDescore) ;
+}
+
+void stopScore1Ball() {
+  task::stop(score1Ball) ;
+}
 void createAutoIndexTask() {
   task ez = task(progAutoIndexCallback) ;
 }
@@ -1928,6 +1987,8 @@ void createIntakeOnTask(){
 void createIntakeOutTask() {
   task intakeO = task(intakeOut) ;
 }
+
+
 
 void stopIntakeOn(){
   task::stop(intakeOn);
@@ -1979,7 +2040,7 @@ void preAuton() {
   rotatePID(68, 90); //used to be 67.5
   createIntakeOnTask() ;
   createAutoIndexTask() ;
-  moveForwardWalk(15, 90, 68, 0.6, 2, 0); // Align with Goal A
+  moveForwardWalk(14.75, 90, 68, 0.6, 2, 0); // Align with Goal A
   stopIntakeOn() ;
   brakeIntake() ;
   stopAutoIndex() ;
@@ -2057,21 +2118,29 @@ void skills(){
   stopIntakeOn() ;
   brakeIntake() ;
   //wait(1, sec) ;
-  rotatePID(68, 90); //used to be 67.5
   createAutoIndexTask() ;
+  rotatePID(68, 90); //used to be 67.5
 
   // Score in Goal A
-  moveForwardWalk(15, 90, 68, 0.6, 2, 0); 
+  moveForwardWalk(14.75, 90, 68, 0.6, 2, 0); 
   stopAutoIndex() ;
-  score1Ball();
-  //wait(0.5, sec) ;
+  createIntakeOnTask() ;
+  stopAutoIndex() ;
+  createScore1BallTask() ;
+  wait(1.5, sec) ;
+  stopIntakeOn() ;
+  brakeIntake() ;
+  stopScore1Ball() ;
+  createIntakeDescoreTask() ;
   moveForwardWalk(-26.5, 90, 68, 0.6, 2, 0) ;
+  stopIntakeDescore() ;
+  brakeIntake() ;
 
   // Pick up ball against wall between Goals A and B
   rotatePID(23,90) ;
   createIntakeOnTask() ;
-  moveForwardWalk(20, 90, 23, 0.6, 2, 0) ;
-  moveForwardWalk(-9, 90, 23, 0.6, 2, 0) ; 
+  moveForwardWalk(19, 90, 23, 0.6, 2, 0) ;
+  moveForwardWalk(-8, 90, 23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
@@ -2079,18 +2148,18 @@ void skills(){
   strafeWalk(36, 90, 23) ;
   createAutoIndexTask() ;
   //rotatePID(0, 90) ;
-  moveForwardWalk(3.75, 90, 23, 0.6, 2, 0) ;
+  moveForwardWalk(3.5, 90, 23, 0.6, 2, 0) ;
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
  
   // Pick up another ball against wall between Goals B and C
-  moveForwardWalk(-3.75, 90, 23, 0.6, 2, 0) ;
+  moveForwardWalk(-3.5, 90, 23, 0.6, 2, 0) ;
   rotatePID(23, 90) ;
   strafeWalk(36, 90, 23) ;
   rotatePID(23,90) ;
   createIntakeOnTask() ;
-  moveForwardWalk(9, 90, 23, 0.6, 2, 0) ; 
+  moveForwardWalk(10.5, 90, 23, 0.6, 2, 0) ; 
   moveForwardWalk(-21, 90, 23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
@@ -2098,13 +2167,13 @@ void skills(){
   // Score in Goal C
   rotatePID(-22, 90) ;
   createAutoIndexTask() ;
-  moveForwardWalk(30, 90, -22, 0.6, 2, 0) ; 
+  moveForwardWalk(29.75, 90, -22, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
   stopAutoIndex() ;
   score1Ball();
   wait(0.5, sec) ;
-  moveForwardWalk(-39.5, 90, -22, 0.6, 2, 0) ; 
+  moveForwardWalk(-39.25, 90, -22, 0.6, 2, 0) ; 
 
   // Pick up ball in front of Goal F
   rotatePID(-180+23, 90) ;
@@ -2116,7 +2185,7 @@ void skills(){
   // Score in Goal F
   rotatePID(-90+23, 90) ; 
   createAutoIndexTask() ;
-  moveForwardWalk(29.5, 90, -90+23, 0.6, 2, 0) ; 
+  moveForwardWalk(27, 90, -90+23, 0.6, 2, 0) ; 
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
@@ -2125,7 +2194,7 @@ void skills(){
   // Pick up ball between Goals F and I
   rotatePID(-180+23, 90) ;
   createIntakeOnTask() ;
-  moveForwardWalk(47, 90, -180+23, 0.6, 2, 0) ; 
+  moveForwardWalk(46.5, 90, -180+23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
@@ -2142,7 +2211,7 @@ void skills(){
   rotatePID(-180+23,90) ;
   createIntakeOnTask() ;
   moveForwardWalk(20, 90, -180+23, 0.6, 2, 0) ;
-  moveForwardWalk(-9, 90, -180+23, 0.6, 2, 0) ; 
+  moveForwardWalk(-8, 90, -180+23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
@@ -2150,30 +2219,48 @@ void skills(){
   strafeWalk(36, 90, -180+23) ; 
   createAutoIndexTask() ;
   //rotatePID(-180+23, 90) ;
-  moveForwardWalk(6, 90, -180+23, 0.6, 2, 0) ;
+  moveForwardWalk(5, 90, -180+23, 0.6, 2, 0) ;
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
 
   // Pick up another ball against wall between Goals H and G
-  moveForwardWalk(-3.75, 90, -180+23, 0.6, 2, 0) ;
+  moveForwardWalk(-2.75, 90, -180+23, 0.6, 2, 0) ;
   rotatePID(-180+23, 90) ;
   strafeWalk(36, 90, -180+23) ;
   rotatePID(-180+23,90) ;
   createIntakeOnTask() ;
-  moveForwardWalk(12, 90, -180+23, 0.6, 2, 0) ; 
-  moveForwardWalk(-22, 90, -180+23, 0.6, 2, 0) ; 
+  moveForwardWalk(11, 90, -180+23, 0.6, 2, 0) ; 
+  moveForwardWalk(-18, 90, -180+23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
   
   // Score in Goal G
   rotatePID(-202, 90) ;
   createAutoIndexTask() ;
-  moveForwardFast(90, 30) ; 
+  moveForwardWalk(27, 90, -202, 0.6, 2, 0) ;
   stopAutoIndex() ;
   score1Ball();
   wait(0.5, sec) ;
-  moveForwardFast(90, -40.5) ; 
+  moveForwardWalk(-41.5, 90, -202, 0.6, 2, 0) ; 
+
+  rotatePID(23-360, 90) ;
+  createIntakeOnTask() ;
+  moveForwardWalk(29, 90, 23-360, 0.6, 2, 0) ;
+  stopIntakeOn() ;
+  brakeIntake() ;
+
+  createAutoIndexTask() ;
+  rotatePID(-427, 90) ;
+  createIntakeOutTask() ;
+  moveForwardFast(60, 17) ;
+  stopAutoIndex() ;
+  stopIntakeOut() ;
+  brakeIntakeOut() ;
+  score1Ball() ;
+  moveForwardFast(60, -12) ; 
+
+
 
 
 }
@@ -2184,13 +2271,7 @@ void skills(){
 void testRun()
 {
   //(72, 90, 0, 0.6, 2, 0);
-  rotatePID(-202, 90) ;
-  createAutoIndexTask() ;
-  moveForwardWalk(30, 90, -202, 0.6, 2, 0) ; 
-  stopAutoIndex() ;
-  score1Ball();
-  wait(0.5, sec) ;
-  moveForwardWalk(-40.5, 90, -202, 0.6, 2, 0) ; 
+
   /*stopIntakeOn();
   brakeIntake();
   //brakeIndexer();
