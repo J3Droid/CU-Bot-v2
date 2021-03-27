@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/*    EZ                                                                        */
+/*                                                                            */
 /*    Module:       main.cpp                                                  */
 /*    Author:       C:\Users\Jeffrey                                          */
 /*    Created:      Thu Jul 02 2020                                           */
@@ -99,6 +99,8 @@ void usercontrol(void) {
   stopAutoIndex();
   stopIntakeOn() ;
   stopIntakeDescore() ;
+  stopIntakeOut() ;
+  stopScore1Ball();
 
   createOpAutoindexTask() ;
   
