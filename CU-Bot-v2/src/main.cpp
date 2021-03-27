@@ -32,7 +32,6 @@
 #include <algorithm>
 #include "opControl.h"
 #include "auton.h"
-
 using namespace vex;
 
 // A global instance of competition
@@ -76,9 +75,9 @@ void autonomous(void) {
 
   //task fakeSpaceMan = task(update);
   //testRun();
-  //homeRowAuton();
+  homeRowAuton();
   //move_to_target_sync(36, 24, deg_to_rad(90), false, 127, false);
-  skills(); 
+  //skills(); 
   //rotatePID(30, 90);
   //forwardWhileRotating30to90(0, 0, 0, 60);
   // ..........................................................................
@@ -96,8 +95,13 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
-  unfold();
+  //unfold();
+  stopAutoIndex();
+  stopIntakeOn() ;
+  stopIntakeDescore() ;
 
+  createOpAutoindexTask() ;
+  
   while (1) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
@@ -108,7 +112,7 @@ void usercontrol(void) {
     // update your motors, etc.
     // ........................................................................
     
-    //joyStickControl();
+    joyStickControl();
     intakeControl();
     manualIndexerControl();
 

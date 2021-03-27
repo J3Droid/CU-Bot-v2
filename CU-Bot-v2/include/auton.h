@@ -150,6 +150,8 @@ void createIntakeOutTask( void ) ;
 
 void stopIntakeOn( void );
 
+void brakeIndexer( void ) ;
+
 void outtakeIntakes(double revolutions, int speed);
 
 void preAuton( void );
@@ -161,6 +163,10 @@ void skills( void );
 void homeRowAuton( void );
 
 void testRun( void );
+
+void diagonalForward (int speed, double distanceToTravel) ;
+
+void diagonalLeft(int speed, double distanceToTravel) ;
 
 extern bool whenIntakingPrime; 
 
