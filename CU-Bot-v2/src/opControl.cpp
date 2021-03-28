@@ -84,15 +84,10 @@ int autoIndexCallback()
 return 1; 
 }
 
-void createOpAutoindexTask ()
-{
-  task autoIndex = task (autoIndexCallback);
-}
-
 void intakeControl ()
 {
   //task joyStickControl = task (joyStickControlCallback);
-  //task autoIndex = task (autoIndexCallback);
+  task autoIndex = task (autoIndexCallback);
 
   if (Controller1.ButtonL1.pressing())
   {

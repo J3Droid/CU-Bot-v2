@@ -101,8 +101,6 @@ void usercontrol(void) {
   stopIntakeDescore() ;
   stopIntakeOut() ;
   stopScore1Ball();
-
-  createOpAutoindexTask() ;
   
   while (1) {
     // This is the main execution loop for the user control program.

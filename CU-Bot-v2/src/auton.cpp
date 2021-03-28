@@ -611,6 +611,8 @@ void diagonalForward(int speed, double distanceToTravel) {
   double circumfrence = wheelDiameterIN * 3.141592;
   double degreesToRotate = ((360 * travelTargetCM) / circumfrence) * sin(45);
 
+  back_R.stop(brake) ;
+  front_L.stop(brake) ;
   back_L.setVelocity(speed, vex::velocityUnits::pct);
   front_R.setVelocity(speed, vex::velocityUnits::pct);
 
@@ -625,6 +627,8 @@ void diagonalLeft(int speed, double distanceToTravel) {
   double circumfrence = wheelDiameterIN * 3.141592;
   double degreesToRotate = ((360 * travelTargetCM) / circumfrence) * sin(45);
 
+  back_L.stop(brake) ;
+  front_R.stop(brake) ;
   back_R.setVelocity(speed, vex::velocityUnits::pct);
   front_L.setVelocity(speed, vex::velocityUnits::pct);
 
@@ -2065,11 +2069,11 @@ void preAuton() {
   void homeRowAuton(){
     
   moveForwardWalk(-3, 90, 0, 0.6, 2, 0) ; 
-  moveForwardWalk(2.5, 90, 0 ,0.6, 2, 0) ;
+  moveForwardWalk(8.5, 90, 0 ,0.6, 2, 0) ;
   autonUnfold() ;
   wait(0.25, sec) ;
   rotatePID(0, 90) ;
-  moveForwardWalk(30, 90, 0, 0.6, 2, 0) ; 
+  moveForwardWalk(24, 90, 0, 0.6, 2, 0) ; 
   //wait(1, sec) ;
   rotatePID(68, 90); //used to be 67.5
   createIntakeDescoreTask() ;
@@ -2083,15 +2087,14 @@ void preAuton() {
   rotatePID(68+135, 90) ;
   moveForwardWalk(24, 90, 68+135, 0.6, 2, 0)  ;
   rotatePID(68+90, 90) ;
-  diagonalLeft(100, 14) ;
+  diagonalLeft(100, 14.5) ;
   wait(0.1, sec) ;
   diagonalForward(100, -22) ;
 
   rotatePID(68+90, 90) ; // Align with Goal G
   createIntakeDescoreTask() ;
-  moveForwardWalk(50, 90, 68+90, 0.6, 2, 0) ;
+  moveForwardWalk(54, 90, 68+90, 0.6, 2, 0) ;
 
-  moveForwardWalk(-26.5, 90, 68+90, 0.6, 2, 0) ;// Back up from Goal 
   stopIntakeDescore() ;
   brakeIntake() ;
   brakeIndexer() ;
