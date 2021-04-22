@@ -75,9 +75,9 @@ void autonomous(void) {
 
   //task fakeSpaceMan = task(update);
   //testRun();
-  //homeRowAuton();
+  homeRowAuton();
   //move_to_target_sync(36, 24, deg_to_rad(90), false, 127, false);
-  skills(); 
+  //skills(); 
   //rotatePID(30, 90);
   //forwardWhileRotating30to90(0, 0, 0, 60);
   // ..........................................................................
@@ -101,7 +101,6 @@ void usercontrol(void) {
   stopIntakeDescore() ;
   stopIntakeOut() ;
   stopScore1Ball();
-  
   while (1) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
@@ -114,7 +113,10 @@ void usercontrol(void) {
     
     joyStickControl();
     intakeControl();
+    startAndStopAutoIndex() ;
+    overstuff1Ball() ;
     manualIndexerControl();
+
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.

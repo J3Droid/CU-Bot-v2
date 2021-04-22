@@ -57,10 +57,11 @@ void joyStickControl()
 
 float threshold1 = 5;
 float threshold2 = 5;
+bool autoIndex = true ;
 
 int autoIndexCallback() 
 {
-  while (true) 
+  while (autoIndex) 
   { 
     if (ballPos2.reflectivity() < threshold2 && Controller1.ButtonR1.pressing() == false && Controller1.ButtonR2.pressing() == false)
     {
@@ -133,3 +134,45 @@ void manualIndexerControl(){
     sorter.stop(brake);
   }
 }
+
+void overstuff1Ball() {
+  if (Controller1.ButtonA.pressing()) {
+    sorter.spin(fwd, 50, pct);
+    indexer.spin(fwd, 25, pct) ;
+    wait(0.5, sec) ;
+  }
+  else {
+    indexer.stop(brake);
+    sorter.stop(brake);
+  }
+}
+
+int autoIndexBool = 0;
+void startAndStopAutoIndex() {
+  double timer = 0 ;
+  bool holding = true;
+  while (Controller1.ButtonX.pressing()) {
+    wait(10, msec) ;
+    timer += 0.01;  
+  }
+
+  if (timer < 0.3 && timer != 0) {
+    holding = false ;
+  }
+  else {
+    holding = true ;
+  }
+
+  if (timer != 0 && autoIndexBool % 2 == 0) {
+    autoIndex = false ;
+    indexer.spin(fwd, 0, pct) ;
+    sorter.spin(fwd, 0, pct) ;
+    autoIndexBool += 1;
+  }
+  else if (holding == false && autoIndexBool % 2 == 1) {
+    autoIndex = true;
+    autoIndexBool += 1;
+  }
+
+}
+

@@ -20,37 +20,7 @@ bool finishedAutonUnfolding = false;
 
 
 //Unfolding procedure
-void autonUnfold ()
-{
-  front_L.stop(hold);
-  front_R.stop(hold);
-  back_L.stop(hold);
-  back_R.stop(hold);
 
-  sorter.spin(fwd, 100, pct);
-  left_intake.spin(fwd, -80, pct);
-  right_intake.spin(fwd, -80, pct);
-  wait(0.25, sec);
-
-  left_intake.stop(brake);
-  right_intake.stop(brake);
-  wait (0.1, sec);
-
-  sorter.stop(brake);
-  //left_intake.spin(fwd, 80, pct);
-  //right_intake.spin(fwd, 80, pct);
-  //wait(0.2, sec);
-  left_intake.stop(brake);
-  right_intake.stop(brake);
-  
-  front_L.stop(brake);
-  front_R.stop(brake);
-  back_L.stop(brake);
-  back_R.stop(brake);
-
-  finishedAutonUnfolding = true;
-
-}
 
 float autonThreshold1 = 5;
 float autonThreshold2 = 5;
@@ -731,8 +701,7 @@ double driftLeftError = 0, driftRightError = 0, combinedDriftError = 0, combined
 
 void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobot, double multiply, double multiplyForHorizontal, double addingFactor, bool cancel = true, int sideWays = 4, double turningRadius = 0, double angleNeeded = 0, double sideWaysDistance = 0, double stafeAtEnd = 0, double distanceAtEnd = 100, double angleAtEnd = 0, double turningRadiusAtEnd = 0) {
 
-  static
-  const double circumference = 3.14159 * 2.825;
+  static const double circumference = 3.14159 * 2.825;
   if (distanceIn == 0)
     return;
   double directionLeftFront = distanceIn > 0 ? 1.0 : -1.0;
@@ -800,11 +769,11 @@ void moveForwardWalk(double distanceIn, double maxVelocity, double headingOfRobo
     if (sameEncoderValue > 10) {
       break;
     }*/
-/*
-    if ((distanceTraveled == distanceTraveledlast) && distanceTraveled > 0.1 && cancel == true) {
+    /*if ((distanceTraveled == distanceTraveledlast) && distanceTraveled > 1.0 && cancel == true) {
       break;
     }
     */
+    
 
     distanceTraveledlast = distanceTraveled; 
     distanceTraveled = (-(left_encoder.rotation(rev) - right_encoder.rotation(rev)) / 2);
@@ -1187,6 +1156,37 @@ main ()
 
 }
 */ // This is for testing on an online compiler to make sure the speeds are resonable 
+void autonUnfold ()
+{
+  front_L.stop(hold);
+  front_R.stop(hold);
+  back_L.stop(hold);
+  back_R.stop(hold);
+
+  sorter.spin(fwd, 100, pct);
+  left_intake.spin(fwd, -80, pct);
+  right_intake.spin(fwd, -80, pct);
+  wait(0.25, sec);
+
+  left_intake.stop(brake);
+  right_intake.stop(brake);
+  wait (0.1, sec);
+
+  sorter.stop(brake);
+  //left_intake.spin(fwd, 80, pct);
+  //right_intake.spin(fwd, 80, pct);
+  //wait(0.2, sec);
+  left_intake.stop(brake);
+  right_intake.stop(brake);
+  
+  front_L.stop(brake);
+  front_R.stop(brake);
+  back_L.stop(brake);
+  back_R.stop(brake);
+
+  finishedAutonUnfolding = true;
+
+}
 
 void strafeWalk (double distanceIn, double maxVelocity, double headingOfRobot, double multiply = 0.6, double addingFactor = 0) 
 {
@@ -2146,14 +2146,14 @@ void skills(){
   // Score in Goal D
   // Score in Goal D
   moveForwardWalk(-3, 90, 0, 0.6, 2, 0) ; 
-  moveForwardWalk(2.5, 90, 0 ,0.6, 2, 0) ;
+  moveForwardWalk(3.5, 90, 0 ,0.6, 2, 0) ;
   autonUnfold() ;
   wait(0.5, sec) ;
   rotatePID(0, 90) ;
 
   //Pick up ball
   createIntakeOnTask() ;
-  moveForwardWalk(30, 90, 0, 0.6, 2, 0) ; 
+  moveForwardWalk(29, 90, 0, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
   //wait(1, sec) ;
@@ -2182,8 +2182,8 @@ void skills(){
   brakeIntake() ;
   brakeIndexer() ;
   createIntakeOnTask() ;
-  moveForwardWalk(19, 90, 23, 0.6, 2, 0) ;
-  moveForwardWalk(-8, 90, 23, 0.6, 2, 0) ; 
+  moveForwardWalk(18, 90, 23, 0.6, 2, 0) ;
+  moveForwardWalk(-7, 90, 23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
@@ -2202,8 +2202,8 @@ void skills(){
   strafeWalk(36, 90, 23) ;
   rotatePID(23,90) ;
   createIntakeOnTask() ;
-  moveForwardWalk(8.5, 90, 23, 0.6, 2, 0) ; 
-  moveForwardWalk(-19, 90, 23, 0.6, 2, 0) ; 
+  moveForwardWalk(6.5, 90, 23, 0.6, 2, 0) ; 
+  moveForwardWalk(-17, 90, 23, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
   
@@ -2244,17 +2244,17 @@ void skills(){
   // Score in Goal I
   rotatePID(-135+23, 90) ;
   createAutoIndexTask() ;
-  moveForwardWalk(12, 90, -135+25, 0.6, 2, 0) ; 
+  moveForwardWalk(11.5, 90, -135+25, 0.6, 2, 0) ; 
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
-  moveForwardWalk(-26.5, 90, -135+25, 0.6, 2, 0) ; 
+  moveForwardWalk(-26, 90, -135+25, 0.6, 2, 0) ; 
 
   // Pick up ball between Goals I and H
   rotatePID(-180+25,90) ;
   createIntakeOnTask() ;
-  moveForwardWalk(20, 90, -180+25, 0.6, 2, 0) ;
-  moveForwardWalk(-8, 90, -180+25, 0.6, 2, 0) ; 
+  moveForwardWalk(19, 90, -180+25, 0.6, 2, 0) ;
+  moveForwardWalk(-7, 90, -180+25, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
 
@@ -2262,7 +2262,7 @@ void skills(){
   strafeWalk(36, 90, -180+25) ; 
   createAutoIndexTask() ;
   //rotatePID(-180+23, 90) ;
-  moveForwardWalk(5, 90, -180+25, 0.6, 2, 0) ;
+  moveForwardWalk(3, 90, -180+25, 0.6, 2, 0) ;
   stopAutoIndex() ;
   score1Ball() ;
   wait(0.5, sec) ;
@@ -2273,15 +2273,14 @@ void skills(){
   strafeWalk(36, 90, -180+23) ;
   rotatePID(-180+23,90) ;
   createIntakeOnTask() ;
-  moveForwardWalk(11, 90, -180+25, 0.6, 2, 0) ; 
-  moveForwardWalk(-17, 90, -180+25, 0.6, 2, 0) ; 
+  moveForwardWalk(9, 90, -180+25, 0.6, 2, 0) ;   moveForwardWalk(-17, 90, -180+25, 0.6, 2, 0) ; 
   stopIntakeOn() ;
   brakeIntake() ;
   
   // Score in Goal G
   rotatePID(-202, 90) ;
   createAutoIndexTask() ;
-  moveForwardWalk(26, 90, -202, 0.6, 2, 0) ;
+  moveForwardWalk(25.5, 90, -202, 0.6, 2, 0) ;
   stopAutoIndex() ;
   score1Ball();
   wait(0.5, sec) ;
@@ -2289,7 +2288,7 @@ void skills(){
 
   rotatePID(23-360, 90) ;
   createIntakeOnTask() ;
-  moveForwardWalk(29, 90, 23-360, 0.6, 2, 0) ;
+  moveForwardWalk(30.5, 90, 23-360, 0.6, 2, 0) ;
   stopIntakeOn() ;
   brakeIntake() ;
 
